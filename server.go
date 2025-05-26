@@ -41,6 +41,7 @@ type Server struct {
 	preCheckoutHandler     func(*PreCheckoutQuery)
 	pollHandler            func(*Poll)
 	pollAnswerHandler      func(*PollAnswer)
+	chatMemberHandler      func(*ChatMemberUpdated)
 
 	middlewares []Middleware
 }
@@ -85,6 +86,7 @@ func New(token string, options ...ServerOption) *Server {
 		preCheckoutHandler:     func(*PreCheckoutQuery) {},
 		pollHandler:            func(*Poll) {},
 		pollAnswerHandler:      func(*PollAnswer) {},
+		chatMemberHandler:      func(*ChatMemberUpdated) {},
 
 		callbackQueryMatcher: make(map[string]func(*CallbackQuery)),
 
@@ -170,6 +172,8 @@ func (s *Server) Start() error {
 					s.pollHandler(update.Poll)
 				case update.PollAnswer != nil:
 					s.pollAnswerHandler(update.PollAnswer)
+				case update.ChatMember != nil:
+					s.chatMemberHandler(update.ChatMember)
 				}
 			}
 			var f = handleUpdate
